@@ -1,0 +1,40 @@
+ROLLBACK;
+BEGIN;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE DOMAIN TIMEZONE AS VARCHAR(5)
+  CHECK (VALUE ~ '^[+-](0[0-9]|1[0-4])([0-3]0|45)?$');
+CREATE DOMAIN TIME_FORMAT AS CHAR(2)
+  CHECK(VALUE IN('12', '24'));
+CREATE DOMAIN PRIORITY AS CHAR(1)
+  CHECK(VALUE IN('l', 'm', 'h'));
+CREATE DOMAIN REPEAT AS CHAR(1)
+  CHECK(VALUE IN('d', 'w', 'm', 'y'));
+
+
+CREATE TABLE user_tbl(
+  id BIGINT PRIMARY KEY,
+  join_data DATE DEFAULT NOW() NOT NULL,
+  timezone TIMEZONE DEFAULT '+00' NOT NULL,
+  lang CHAR(7) DEFAULT 'en' NOT NULL,
+  time_format TIME_FORMAT DEFAULT '24'
+);
+
+CREATE TABLE event_tbl(
+  ID UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  name VARCHAR(60) NOT NULL,
+  next_remind_date BIGINT NOT NULL,
+  repeat REPEAT,
+  active BOOLEAN DEFAULT TRUE NOT NULL,
+  priority PRIORITY DEFAULT 'm' NOT NULL,
+  creation_date DATE DEFAULT NOW() NOT NULL,
+
+  CONSTRAINT fk_user
+    FOREIGN KEY(user_id)
+    REFERENCES user_tbl(id)
+    ON DELETE CASCADE
+);  
+
+COMMIT;
