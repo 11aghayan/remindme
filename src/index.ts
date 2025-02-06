@@ -15,6 +15,10 @@ bot.use(async (ctx, next) => {
 });
 bot.use(mainMenu);
 
+bot.api.setMyCommands([
+  { command: "menu", description: "Open Main Menu" }
+]);
+
 bot.command("start", async (ctx) => {
   const user = ctx.from as User;
   const id = user.id;
@@ -26,6 +30,10 @@ bot.command("start", async (ctx) => {
     const res = await addUser(id, lang);
     if (res === null) return await ctx.reply("An error occurred");
   } 
+  await ctx.reply("Main Menu", { reply_markup: mainMenu });
+});
+
+bot.command("menu", async (ctx) => {
   await ctx.reply("Main Menu", { reply_markup: mainMenu });
 });
 

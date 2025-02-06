@@ -45,9 +45,9 @@ export async function updateTimeFormat(userId: number, timeFormat: string) {
   try {
     await db.query(
       `
-        UPDATE event_tbl
-        SET time_format $2
-        WHERE user_id = $1;
+        UPDATE user_tbl
+        SET time_format = $2
+        WHERE id = $1;
       `,
       [userId, timeFormat]
     );
@@ -55,6 +55,24 @@ export async function updateTimeFormat(userId: number, timeFormat: string) {
     return true;
   } catch (error) {
     errorLogger("DB.updateTimeFormat()", error);
+    return null;
+  }
+}
+
+export async function updateTimezone(userId: number, timezone: string) {
+  try {
+    await db.query(
+      `
+        UPDATE user_tbl
+        SET timezone = $2
+        WHERE id = $1;
+      `,
+      [userId, timezone]
+    );
+
+    return true;
+  } catch (error) {
+    errorLogger("DB.updateTimezone()", error);
     return null;
   }
 }
